@@ -1,4 +1,5 @@
 package bgu.spl.mics;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -10,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class MessageBusImpl implements MessageBus {
     ConcurrentHashMap<MicroService, LinkedBlockingQueue<Message>> messagesQueues; // map: key = MicroService, value = message queue of this MicroService
-    ConcurrentHashMap<Class<? extends Message>, ConcurrentLinkedQueue<MicroService>> subscribersForMessages; // map: key = message (event/broadcast), value = linked queue of MicroService's that subscribed to this message
+    ConcurrentHashMap<Class<? extends Message>, ConcurrentLinkedQueue<MicroService>> subscribersForMessages; // map: key = TYPE (event/broadcast), value = linked queue of MicroService's that subscribed to this message
     ConcurrentHashMap<Event, Future> futureOfEvent; // map: key = event, value = future connected this event
 
 
@@ -44,6 +45,8 @@ public class MessageBusImpl implements MessageBus {
 
     @Override
     public void register(MicroService m) {//האנשים קוראים לפונקציה הזאת כדי להירשם
+        LinkedBlockingQueue<Message> queue = new LinkedBlockingQueue<Message>();
+
 
 
     }

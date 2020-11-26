@@ -19,15 +19,28 @@ class EwokTest {
 
     @Test
     void acquire() {
-        assertTrue(E.available);
-        acquire();
+        if(E.available==false){
+            try {
+                E.acquire();
+            } catch (IllegalArgumentException e){}
+
+        }else{
+            E.acquire();
+        }
         assertFalse(E.available);
     }
 
     @Test
     void release() {
-        assertFalse(E.available);
-        release();
+        if(E.available==true){
+            try {
+                E.release();
+            } catch (IllegalArgumentException e){}
+
+        }else{
+            E.release();
+        }
         assertTrue(E.available);
     }
+
 }

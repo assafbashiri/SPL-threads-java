@@ -41,9 +41,11 @@ class FutureTest {
     @Test
     void testGet() {
         assertFalse(future.isDone());
-        future.get(100, TimeUnit.MILLISECONDS);
+        String result = future.get(100,TimeUnit.MILLISECONDS);
         assertFalse(future.isDone());
+        assertEquals(null,result);
         future.resolve("hello");
-        assertEquals(future.get(100,TimeUnit.MILLISECONDS),"hello");
+        assertEquals("hello",future.get(100,TimeUnit.MILLISECONDS));
+
     }
 }

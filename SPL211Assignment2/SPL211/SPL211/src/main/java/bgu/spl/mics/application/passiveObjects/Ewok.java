@@ -17,7 +17,7 @@ public class Ewok {
     /**
      * Acquires an Ewok
      */
-    public void acquire() {
+    public void acquire() {//הופכת מאמת לשקר
         if(this.available!=true)
             throw new IllegalArgumentException("before call acquire act the Ewok need to be available ");
         available=false;
@@ -27,7 +27,7 @@ public class Ewok {
     /**
      * release an Ewok
      */
-    public void release() {
+    public void release() {//הפוכך משקר לאמת
         if(this.available!=false)
             throw new IllegalArgumentException("before call acquire act the Ewok need to be not available ");
         available=true;
