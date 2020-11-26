@@ -1,17 +1,17 @@
 package bgu.spl.mics;
-import java.util.Queue;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 /**
  * The {@link MessageBusImpl class is the implementation of the MessageBus interface.
  * Write your implementation here!
  * Only private fields and methods can be added to this class.
  */
 public class MessageBusImpl implements MessageBus {
-    private Vector<Queue<Future>> queues;
-
-
+    ConcurrentHashMap<MicroService, LinkedBlockingQueue<Message>> messagesQueues; // map: key = MicroService, value = message queue of this MicroService
+    ConcurrentHashMap<Class<? extends Message>, ConcurrentLinkedQueue<MicroService>> subscribersForMessages; // map: key = message (event/broadcast), value = linked queue of MicroService's that subscribed to this message
+    ConcurrentHashMap<Event, Future> futureOfEvent; // map: key = event, value = future connected this event
 
 
     @Override
@@ -61,7 +61,8 @@ public class MessageBusImpl implements MessageBus {
     private static class SingletonHolder {
         private static MessageBusImpl instance = new MessageBusImpl();
     }
-    public static MessageBusImpl getInstance() {
+
+    public static MessageBusImpl getInstance(){
         return SingletonHolder.instance;
     }
 
