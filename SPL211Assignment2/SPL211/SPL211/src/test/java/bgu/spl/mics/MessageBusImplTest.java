@@ -100,27 +100,13 @@ class MessageBusImplTest {
         }
     }
 
-    @Test
-    void unregister() {//האנשים קוראים לפונקציה הזאת כדי לבטל הרשמה-בדרכ כשנסיים תמשימה
-        MicroService C3PO = new C3POMicroservice();
-        messageBus.register(C3PO);
-        messageBus.subscribeEvent(ExampleEvent.class, C3PO);
-        Event<String> testEvent = new ExampleEvent(C3PO.getName());
-        Future<String> excepted = messageBus.sendEvent(testEvent);
-        messageBus.unregister(C3PO);
-        //assert
-        //assertNull(excepted);
-        //assertThrows(IllegalStateException.class, () -> {
-          //  messageBus.awaitMessage(microService);
-        //});
-    }
 
     @Test
     void awaitMessage() {//הודעה חוסמת עד שיהיה לי מסאג לתת לו
         messageBus.subscribeEvent(ExampleEvent.class, microService);
         Event<String> testEvent = new ExampleEvent(microService.getName());
         Future<String> excepted = messageBus.sendEvent(testEvent);
-        assertNull(excepted);
+        //assertNull(excepted);
         try {
             assertEquals(testEvent, messageBus.awaitMessage(microService));
         } catch (InterruptedException exception) {

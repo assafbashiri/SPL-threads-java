@@ -47,8 +47,8 @@ public class Future<T> {
 	public void resolve (T result) {
 		this.result=result;
 		this.isDone=true;
-		this.notifyAll();
-
+		Thread.interrupted();
+		//notifyAll();
 	}
 
 	/**
@@ -72,19 +72,15 @@ public class Future<T> {
 	public T get(long timeout, TimeUnit unit) {
 		if (this.isDone) {
 			return this.result;
-		} else {
+		} else
 			try {
-
-				this.wait(unit.toMillis(timeout));
-				if(this.isDone)
+				Thread.sleep(timeout);
+				if (this.isDone)
 					return this.result;
 			} catch (InterruptedException var5) {}
-
 			return this.result;
-		}
-
-
 	}
+
 	public T getResult(){
 		return result;
 	}
