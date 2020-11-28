@@ -18,6 +18,7 @@ class MessageBusImplTest {
     void setUp() {
         microService = new HanSoloMicroservice();
         messageBus = MessageBusImpl.getInstance();
+        messageBus.register(microService);
 
     }
 
@@ -25,48 +26,48 @@ class MessageBusImplTest {
     void subscribeEvent() {//כשאדם רוצה להירשם לסוג מסויים של אירוע
 
         messageBus.subscribeEvent(ExampleEvent.class, microService);
-        Event<String> testEvent = new ExampleEvent(microService.getName());
-        messageBus.sendEvent(testEvent);
+        Event<String> event = new ExampleEvent(microService.getName());
+        messageBus.sendEvent(event);
         try{
-            assertEquals(testEvent,messageBus.awaitMessage(microService)); }
+            assertEquals(event,messageBus.awaitMessage(microService)); }
         catch (InterruptedException exception) {
-            exception.printStackTrace();
+            //exception.printStackTrace();
         }
     }
 
     @Test
     void subscribeBroadcast() {//כשאדם רוצה להירשם לסוג מסויים של הודעות
         messageBus.subscribeBroadcast(ExampleBroadcast.class, microService);
-        Broadcast testBroadcast = new ExampleBroadcast(microService.getName());
-        messageBus.sendBroadcast(testBroadcast);
+        Broadcast broadcast = new ExampleBroadcast(microService.getName());
+        messageBus.sendBroadcast(broadcast);
         try {
-            assertEquals(testBroadcast,messageBus.awaitMessage(microService)); }
+            assertEquals(broadcast,messageBus.awaitMessage(microService)); }
         catch (InterruptedException exception) {
-            exception.printStackTrace();
+           // exception.printStackTrace();
         }
     }
 
     @Test
     void complete() {//מעדכנים אותנו כשהמשימה הושלמה
         String result = "result";
-        Event<String> testEvent = new ExampleEvent(microService.getName());
-        Future<String> excepted = messageBus.sendEvent(testEvent);
-        assertNull(excepted.getResult());
-        messageBus.complete(testEvent,result);
-        assertTrue(excepted.isDone());
+        Event<String> event = new ExampleEvent(microService.getName());
+        Future<String> future = messageBus.sendEvent(event);
+        assertNull(future.getResult());
+        messageBus.complete(event,result);
+        assertTrue(future.isDone());
     }
 
     @Test
     void sendBroadcast() {//כשאנשים רוצים לשלוח הודעה לרשימת תפוצה
-        MicroService subscriberTest1 = new C3POMicroservice();
+        MicroService C3PO = new C3POMicroservice();
         messageBus.subscribeBroadcast(ExampleBroadcast.class, microService);
-        messageBus.subscribeBroadcast(ExampleBroadcast.class, subscriberTest1);
-        Broadcast testBroadcast = new ExampleBroadcast(microService.getName());
-        messageBus.sendBroadcast(testBroadcast);
+        messageBus.subscribeBroadcast(ExampleBroadcast.class, C3PO);
+        Broadcast broadcast = new ExampleBroadcast(microService.getName());
+        messageBus.sendBroadcast(broadcast);
         try {
-            assertEquals(messageBus.awaitMessage(subscriberTest1),messageBus.awaitMessage(microService)); }
+            assertEquals(messageBus.awaitMessage(C3PO),messageBus.awaitMessage(microService)); }
         catch (InterruptedException exception) {
-            exception.printStackTrace();
+            //exception.printStackTrace();
         }
     }
 
@@ -76,13 +77,13 @@ class MessageBusImplTest {
         messageBus.register(C3PO);
         messageBus.subscribeEvent(ExampleEvent.class, microService);
         messageBus.subscribeEvent(ExampleEvent.class, C3PO);
-        Event<String> testEvent = new ExampleEvent(microService.getName());
-        Future<String> excepted = messageBus.sendEvent(testEvent);
-        assertNull(excepted.getResult());
+        Event<String> event = new ExampleEvent(microService.getName());
+        Future<String> future = messageBus.sendEvent(event);
+        assertNull(future.getResult());
         try {
             assertEquals(messageBus.awaitMessage(C3PO),messageBus.awaitMessage(microService)); }
         catch (InterruptedException exception) {
-            exception.printStackTrace();
+            //exception.printStackTrace();
         }
     }
 
@@ -96,7 +97,7 @@ class MessageBusImplTest {
         try {
             assertEquals(testEvent,messageBus.awaitMessage(microService)); }
         catch (InterruptedException exception) {
-            exception.printStackTrace();
+           // exception.printStackTrace();
         }
     }
 
@@ -105,12 +106,12 @@ class MessageBusImplTest {
     void awaitMessage() {//הודעה חוסמת עד שיהיה לי מסאג לתת לו
         messageBus.subscribeEvent(ExampleEvent.class, microService);
         Event<String> testEvent = new ExampleEvent(microService.getName());
-        Future<String> excepted = messageBus.sendEvent(testEvent);
-        //assertNull(excepted);
+        Future<String> future = messageBus.sendEvent(testEvent);
+        //assertNull(future);
         try {
             assertEquals(testEvent, messageBus.awaitMessage(microService));
         } catch (InterruptedException exception) {
-            exception.printStackTrace();
+           // exception.printStackTrace();
         }
     }
 }

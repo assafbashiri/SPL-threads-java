@@ -1,5 +1,6 @@
 package bgu.spl.mics;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -11,7 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class MessageBusImpl implements MessageBus {
     ConcurrentHashMap<MicroService, LinkedBlockingQueue<Message>> messagesQueues; // map: key = MicroService, value = message queue of this MicroService
-    ConcurrentHashMap<Class<? extends Message>, ConcurrentLinkedQueue<MicroService>> subscribersForMessages; // map: key = TYPE (event/broadcast), value = linked queue of MicroService's that subscribed to this message
+    ConcurrentHashMap<Class<? extends Message>, ConcurrentLinkedQueue<MicroService>> subscribersForMessagesType; // map: key = TYPE (event/broadcast), value = linked queue of MicroService's that subscribed to this message
     ConcurrentHashMap<Event, Future> futureOfEvent; // map: key = event, value = future connected this event
 
 
@@ -46,6 +47,7 @@ public class MessageBusImpl implements MessageBus {
     @Override
     public void register(MicroService m) {//האנשים קוראים לפונקציה הזאת כדי להירשם
         LinkedBlockingQueue<Message> queue = new LinkedBlockingQueue<Message>();
+        messagesQueues.put(m,queue);
 
 
 
@@ -58,14 +60,22 @@ public class MessageBusImpl implements MessageBus {
 
     @Override
     public Message awaitMessage(MicroService m) throws InterruptedException {
+     /*   BlockingQueue<Message> blockingQueue;
 
+        blockingQueue = messagesQueues.get(m);
+        if (blockingQueue != null) {
+            return blockingQueue.take();
+        }
+*/
         return null;
+
     }
     private static class SingletonHolder {
         private static MessageBusImpl instance = new MessageBusImpl();
     }
 
     public static MessageBusImpl getInstance(){
+
         return SingletonHolder.instance;
     }
 

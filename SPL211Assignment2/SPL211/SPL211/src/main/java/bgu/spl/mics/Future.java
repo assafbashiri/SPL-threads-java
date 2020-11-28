@@ -14,6 +14,7 @@ public class Future<T> {
 	private boolean isDone;
     private T result;
 
+
 	/**
 	 * This should be the the only public constructor in this class.
 	 */
@@ -35,7 +36,7 @@ public class Future<T> {
 		try {
 			this.wait();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
         return result;
@@ -48,7 +49,8 @@ public class Future<T> {
 		this.result=result;
 		this.isDone=true;
 		Thread.interrupted();
-		//notifyAll();
+		//this.notifyAll();
+
 	}
 
 	/**
@@ -74,10 +76,10 @@ public class Future<T> {
 			return this.result;
 		} else
 			try {
-				Thread.sleep(timeout);
-				if (this.isDone)
-					return this.result;
-			} catch (InterruptedException var5) {}
+				unit.sleep(timeout);
+				//this.wait(unit.toMillis(timeout));
+
+			} catch (InterruptedException e) {}
 			return this.result;
 	}
 
