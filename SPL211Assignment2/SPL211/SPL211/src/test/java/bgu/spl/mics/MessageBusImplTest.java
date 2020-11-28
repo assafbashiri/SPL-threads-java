@@ -60,6 +60,7 @@ class MessageBusImplTest {
     @Test
     void sendBroadcast() {//כשאנשים רוצים לשלוח הודעה לרשימת תפוצה
         MicroService C3PO = new C3POMicroservice();
+        messageBus.register(C3PO);
         messageBus.subscribeBroadcast(ExampleBroadcast.class, microService);
         messageBus.subscribeBroadcast(ExampleBroadcast.class, C3PO);
         Broadcast broadcast = new ExampleBroadcast(microService.getName());
@@ -89,13 +90,14 @@ class MessageBusImplTest {
 
     @Test
     void register() {//האנשים קוראים לפונקציה הזאת כדי להירשם
-        messageBus.register(microService);
-        messageBus.subscribeEvent(ExampleEvent.class, microService);
-        Event<String> testEvent = new ExampleEvent(microService.getName());
+        MicroService C3PO = new C3POMicroservice();
+        messageBus.register(C3PO);
+        messageBus.subscribeEvent(ExampleEvent.class, C3PO);
+        Event<String> testEvent = new ExampleEvent(C3PO.getName());
         Future<String> excepted = messageBus.sendEvent(testEvent);
         //assertNull(excepted.getResult());
         try {
-            assertEquals(testEvent,messageBus.awaitMessage(microService)); }
+            assertEquals(testEvent,messageBus.awaitMessage(C3PO)); }
         catch (InterruptedException exception) {
            // exception.printStackTrace();
         }
