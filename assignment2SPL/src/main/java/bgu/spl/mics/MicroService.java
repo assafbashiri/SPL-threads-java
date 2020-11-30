@@ -24,10 +24,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>
  */
 public abstract class MicroService implements Runnable {
-    private String name;
-    private MessageBusImpl messageBus= MessageBusImpl.getInstance();
-    private boolean terminate ;
-    private ConcurrentHashMap<Class<?>, Callback> callBacksForEvents; // map: key = message, value = callback
+    protected String name;
+    protected MessageBusImpl messageBus= MessageBusImpl.getInstance();
+    protected boolean terminate ;
+    protected ConcurrentHashMap<Class<?>, Callback> callBacksForEvents; // map: key = message, value = callback
 
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
@@ -62,6 +62,7 @@ public abstract class MicroService implements Runnable {
      */
     protected final <T, E extends Event<T>> void subscribeEvent(Class<E> type, Callback<E> callback) {
         messageBus.subscribeEvent(type,this);
+        callBacksForEvents.put(type , callback);
     }
 
     /**
@@ -128,6 +129,7 @@ public abstract class MicroService implements Runnable {
      */
     protected final <T> void complete(Event<T> e, T result) {
     	messageBus.complete(e,result);
+
     }
 
     /**
@@ -139,9 +141,7 @@ public abstract class MicroService implements Runnable {
      * Signals the event loop that it must terminate after handling the current
      * message.
      */
-    protected final void terminate() {
-    	
-    }
+    protected final void terminate() { }
 
     /**
      * @return the name of the service - the service name is given to it in the

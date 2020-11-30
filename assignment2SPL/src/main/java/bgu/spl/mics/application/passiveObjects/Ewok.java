@@ -9,6 +9,7 @@ package bgu.spl.mics.application.passiveObjects;
 public class Ewok {
 	int serialNumber;
 	boolean available;
+	//private Ewoks ewoks = Ewoks.getInstance();
 	
   public Ewok(int serialNumber){
       this.serialNumber=serialNumber;

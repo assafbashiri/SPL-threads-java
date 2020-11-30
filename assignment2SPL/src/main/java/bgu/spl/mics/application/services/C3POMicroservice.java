@@ -20,6 +20,7 @@ public class C3POMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
+        messageBus.subscribeEvent(AttackEvent.class , this);
 
     }
 }

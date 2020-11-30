@@ -1,9 +1,7 @@
 package bgu.spl.mics.application.passiveObjects;
 
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Passive object representing the resource manager.
@@ -14,23 +12,29 @@ import java.util.Vector;
  * You can add ONLY private methods and fields to this class.
  */
 public class Ewoks {
-   private Vector<Ewok> list;
-   private int size;
-   public Ewoks(){
-       size=0;
-       list=new Vector<Ewok>();
-   }
-   public void addEwok (int serialNumber){
-       list.add(new Ewok(serialNumber));
-       size=size+1;
-   }
-    public Ewok getEwok(int serialNumber){
-       for(int i=0;i<size;i++){
-           if(list.elementAt(i).getSerialNumber()==serialNumber)
-               return list.elementAt(i);
-       }
-        throw new IllegalArgumentException("no such Ewok");
+    private ConcurrentHashMap<Integer, Ewok> list;
 
+    public Ewoks()
+    {
+        list=new ConcurrentHashMap<>();
+    }
+
+    public void addEwok (int serialNumber)
+    {
+        list.put(serialNumber,new Ewok(serialNumber));
+    }
+
+    public Ewok getEwok(int serialNumber)
+    {
+        Ewok ewok = list.get(serialNumber);
+        return ewok;
+    }
+
+    private static class SingletonHolder {
+        private static Ewoks instance = new Ewoks();
+    }
+    public static Ewoks getInstance(){
+        return SingletonHolder.instance;
     }
 
 }
