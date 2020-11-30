@@ -31,7 +31,7 @@ public class LeiaMicroservice extends MicroService {
         for (Attack a : attacks){
             AttackEvent attack = new AttackEvent(this.name , a);
             Future <Boolean> future = sendEvent(attack);
-            this.callBacksForEvents.put(AttackEvent.class , (Callback) future);
+            this.callBacksForMessage.put(AttackEvent.class , (Callback) future);
         }
     	
     }

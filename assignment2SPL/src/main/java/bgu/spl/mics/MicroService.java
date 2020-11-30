@@ -1,8 +1,5 @@
 package bgu.spl.mics;
 
-
-import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -27,7 +24,7 @@ public abstract class MicroService implements Runnable {
     protected String name;
     protected MessageBusImpl messageBus= MessageBusImpl.getInstance();
     protected boolean terminate ;
-    protected ConcurrentHashMap<Class<?>, Callback> callBacksForEvents; // map: key = message, value = callback
+    protected ConcurrentHashMap<Class<?>, Callback> callBacksForMessage; // map: key = message, value = callback
 
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
@@ -35,7 +32,7 @@ public abstract class MicroService implements Runnable {
      */
     public MicroService(String name) {
         terminate = false;
-        callBacksForEvents = new ConcurrentHashMap<Class<?>, Callback>();
+        callBacksForMessage = new ConcurrentHashMap<Class<?>, Callback>();
         this.name=name;
     }
 
@@ -61,8 +58,9 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <T, E extends Event<T>> void subscribeEvent(Class<E> type, Callback<E> callback) {
+        if(callBacksForMessage.get(type)==null)
+            callBacksForMessage.put(type,callback);
         messageBus.subscribeEvent(type,this);
-        callBacksForEvents.put(type , callback);
     }
 
     /**
@@ -86,6 +84,8 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback) {
+        if(callBacksForMessage.get(type)==null)
+            callBacksForMessage.put(type,callback);
         messageBus.subscribeBroadcast(type,this);
     	
     }
@@ -157,7 +157,20 @@ public abstract class MicroService implements Runnable {
      */
     @Override
     public final void run() {
+        initialize();
         messageBus.register(this);
+        Message m ;
+        while (!terminate){
+            try {
+                m = messageBus.awaitMessage(this);
+                if(m != null) {
+                    callBacksForMessage.get(m.getClass()).call(m);
+                }
+
+            } catch (InterruptedException e) {
+            }
+        }
+        messageBus.unregister(this);
 
     	
     }

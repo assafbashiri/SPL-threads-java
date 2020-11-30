@@ -100,6 +100,10 @@ public class MessageBusImpl implements MessageBus {
             queue.remove(m);
         }
         LinkedBlockingQueue<Message> queue = messagesQueues.remove(m);
+        while (queue.size()>0){
+            queue.remove();
+        }
+        queue.clear();
 
     }
 

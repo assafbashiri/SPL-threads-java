@@ -8,5 +8,19 @@ package bgu.spl.mics.application.passiveObjects;
  * Do not add to this class nothing but a single constructor, getters and setters.
  */
 public class Diary {
+    private int totalAttack;
 
+   /* private long HanSoloFinish;
+    private long C3POFinish;
+    private long R2D2Deactivate;
+    private long LeiaTerminate;
+    private long HanSoloTerminate;
+    private long C3POTerminate;
+    private long R2D2Terminate;
+    private long LandoTerminate;
+*/
+
+    public int getTotalAttack() {
+        return totalAttack;
+    }
 }
