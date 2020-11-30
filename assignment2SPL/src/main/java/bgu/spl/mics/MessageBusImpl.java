@@ -80,7 +80,7 @@ public class MessageBusImpl implements MessageBus {
             queue.add(m);
             return future;
         }
-        return null;
+        return null;//check
     }
 
     @Override

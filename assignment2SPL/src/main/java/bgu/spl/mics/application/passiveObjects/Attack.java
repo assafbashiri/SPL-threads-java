@@ -25,6 +25,7 @@ public class Attack {
         return serials;
     }
 
+
     public int getDuration() {
         return duration;
     }

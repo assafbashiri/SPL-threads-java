@@ -24,9 +24,10 @@ public class Ewoks {
         list.put(serialNumber,new Ewok(serialNumber));
     }
 
-    public Ewok getEwok(int serialNumber)
+    public  Ewok  getEwok(int serialNumber)
     {
         Ewok ewok = list.get(serialNumber);
+        ewok.acquire();
         return ewok;
     }
 

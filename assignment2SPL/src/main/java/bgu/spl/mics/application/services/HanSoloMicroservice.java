@@ -3,6 +3,7 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
+import bgu.spl.mics.application.passiveObjects.Ewoks;
 
 /**
  * HanSoloMicroservices is in charge of the handling {@link AttackEvent}.
@@ -13,6 +14,7 @@ import bgu.spl.mics.application.messages.AttackEvent;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class HanSoloMicroservice extends MicroService {
+    private Ewoks ewoks = Ewoks.getInstance();
 
     public HanSoloMicroservice() {
         super("Han");
@@ -23,5 +25,8 @@ public class HanSoloMicroservice extends MicroService {
     protected void initialize() {
         messageBus.subscribeEvent(AttackEvent.class , this);
         }
+
+
     }
+
 

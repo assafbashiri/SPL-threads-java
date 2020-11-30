@@ -2,6 +2,7 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
+import bgu.spl.mics.application.passiveObjects.Ewoks;
 
 
 /**
@@ -13,7 +14,8 @@ import bgu.spl.mics.application.messages.AttackEvent;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class C3POMicroservice extends MicroService {
-	
+    private Ewoks ewoks = Ewoks.getInstance();
+
     public C3POMicroservice() {
         super("C3PO");
     }
