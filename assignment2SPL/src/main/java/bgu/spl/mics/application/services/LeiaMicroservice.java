@@ -51,20 +51,21 @@ public class LeiaMicroservice extends MicroService {
             terminate();
         };
         this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
-        Callback<FinishAttackBroadcast> finishAttackBroadcastCallback = c -> {
-        };
+        //Callback<FinishAttackBroadcast> finishAttackBroadcastCallback = c -> {
+//        };
 
-        int num = diary.getTotalAttack();
         for (Future f : attackStatus.values()){
             f.get();
         }
         DeactivationEvent deactivationEvent = new DeactivationEvent();
         Future future = this.sendEvent(deactivationEvent);
         future.get();
-        //BombDestroyerEvent bombDestroyerEvent = new BombDestroyerEvent();
-        //Future future1 = this.sendEvent(bombDestroyerEvent);
-        //future1.get();
-        //לחסל את כולם
+        BombDestroyerEvent bombDestroyerEvent = new BombDestroyerEvent();
+        Future future1 = this.sendEvent(bombDestroyerEvent);
+        future1.get();
+        FinishAttackBroadcast b = new FinishAttackBroadcast();
+        this.sendBroadcast(b);
+        //terminate();
 
     	
     }

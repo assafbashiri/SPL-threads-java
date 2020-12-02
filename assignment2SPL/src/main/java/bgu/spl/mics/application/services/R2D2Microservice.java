@@ -28,8 +28,7 @@ public class R2D2Microservice extends MicroService {
     protected void initialize() {
         Callback<DeactivationEvent> deactivationEventCallback = c -> {
             Thread.sleep(duration);
-            FinishDeactivationBroadcast b = new FinishDeactivationBroadcast();
-            this.sendBroadcast(b);
+            messageBus.complete(c , true);
         };
        this.subscribeEvent(DeactivationEvent.class,deactivationEventCallback);
        Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {

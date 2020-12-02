@@ -20,9 +20,9 @@ public class Ewoks {
         list=new ConcurrentHashMap<>();
     }
 
-    public void addEwok (int serialNumber)
-    {
-        list.put(serialNumber,new Ewok(serialNumber));
+    public void addEwok (int serialNumber){
+        if(list.get(serialNumber)==null)
+            list.put(serialNumber,new Ewok(serialNumber));
     }
 
     public  Ewok  getEwok(int serialNumber)
@@ -42,13 +42,13 @@ public class Ewoks {
     public synchronized boolean  useResource ( List<Integer> list){
         boolean output =true;
         Ewok e;
-        for(int i=0 ; i<list.size() && !output;i++){
+        for(int i=0 ; i<list.size() && output ;i++){
             e = getEwok(list.get(i));
             if(!e.available)
                 output=false;
         }
         if(output) {
-            for (int i = 0; i < list.size() && !output; i++) {
+            for (int i = 0; i < list.size(); i++) {
                 e = getEwok(list.get(i));
                 e.acquire();
             }
@@ -62,5 +62,6 @@ public class Ewoks {
             e.release();
         }
     }
+
 
 }

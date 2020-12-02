@@ -1,5 +1,6 @@
 package bgu.spl.mics.application;
 
+import bgu.spl.mics.application.passiveObjects.Ewoks;
 import bgu.spl.mics.application.services.LeiaMicroservice;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
@@ -21,7 +22,9 @@ public class Main {
 		Gson gson = new Gson();
 		JsonReader reader = new JsonReader(new FileReader("input.json"));
 		JsonParser parser = gson.fromJson(reader , JsonParser.class);
-		//LeiaMicroservice leia = new LeiaMicroservice();
+		//LeiaMicroservice leia = new LeiaMicroservice(); //להכניס את רשימת ההתקפות שקיבלנו
+		Ewoks ewoks = Ewoks.getInstance();// עכשיו צריך להוסיף את כל האיווק שצריך לפי הקובץ שנתנו לנו..
+
 		
 	}
 }

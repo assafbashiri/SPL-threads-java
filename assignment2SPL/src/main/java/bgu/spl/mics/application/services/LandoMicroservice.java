@@ -26,8 +26,7 @@ public class LandoMicroservice  extends MicroService {
     protected void initialize() {
         Callback<BombDestroyerEvent> bombDestroyerEventCallback = c -> {
             Thread.sleep(duration);//check
-            FinishBombDestroyerBroadcast b = new FinishBombDestroyerBroadcast();
-            this.sendBroadcast(b);
+            messageBus.complete( c , true);
         };
         this.subscribeEvent(BombDestroyerEvent.class, bombDestroyerEventCallback);
         Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
