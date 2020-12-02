@@ -1,8 +1,11 @@
 package bgu.spl.mics.application.services;
 
+import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.BombDestroyerEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
+import bgu.spl.mics.application.messages.FinishBombDestroyerBroadcast;
+import bgu.spl.mics.application.messages.FinishDeactivationBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
 
 /**
@@ -14,14 +17,25 @@ import bgu.spl.mics.application.passiveObjects.Diary;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class R2D2Microservice extends MicroService {
-
+    public long duration;
     public R2D2Microservice(long duration) {
         super("R2D2");
+        this.duration=duration;
+
     }
 
     @Override
     protected void initialize() {
-        messageBus.subscribeEvent(DeactivationEvent.class,this);
+        Callback<DeactivationEvent> deactivationEventCallback = c -> {
+            Thread.sleep(duration);
+            FinishDeactivationBroadcast b = new FinishDeactivationBroadcast();
+            this.sendBroadcast(b);
+        };
+       this.subscribeEvent(DeactivationEvent.class,deactivationEventCallback);
+       Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
+           terminate();
+       };
+       this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
 
     }
 }

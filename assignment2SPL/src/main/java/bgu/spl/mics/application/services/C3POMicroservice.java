@@ -1,8 +1,15 @@
 package bgu.spl.mics.application.services;
 
+import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
+import bgu.spl.mics.application.messages.FinishAttackBroadcast;
+import bgu.spl.mics.application.messages.FinishBombDestroyerBroadcast;
+import bgu.spl.mics.application.passiveObjects.Diary;
+import bgu.spl.mics.application.passiveObjects.Ewok;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
+
+import java.util.List;
 
 
 /**
@@ -15,6 +22,7 @@ import bgu.spl.mics.application.passiveObjects.Ewoks;
  */
 public class C3POMicroservice extends MicroService {
     private Ewoks ewoks = Ewoks.getInstance();
+    Diary diary = Diary.getInstance();
 
     public C3POMicroservice() {
         super("C3PO");
@@ -22,7 +30,28 @@ public class C3POMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
-        messageBus.subscribeEvent(AttackEvent.class , this);
+        Callback<AttackEvent> attackEventCallback = c -> {
+             List<Integer> list = c.workers();
+            Ewok e;
+             boolean use = ewoks.useResource(list);
+             while (!use){
+                 use = ewoks.useResource(list);
+             }
+            Thread.sleep(c.getDuration());
+             ewoks.release(list);
+            FinishAttackBroadcast b = new FinishAttackBroadcast();
+            sendBroadcast(b);
+            diary.addAttack();
+            messageBus.complete(c ,true);
 
+
+        };
+        this.subscribeEvent(AttackEvent.class, attackEventCallback);
+
+
+        Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
+            terminate();
+        };
+        this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
     }
 }

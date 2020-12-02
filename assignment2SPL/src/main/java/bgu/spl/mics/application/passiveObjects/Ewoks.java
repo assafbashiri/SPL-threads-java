@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.passiveObjects;
 
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -27,15 +28,39 @@ public class Ewoks {
     public  Ewok  getEwok(int serialNumber)
     {
         Ewok ewok = list.get(serialNumber);
-        ewok.acquire();
+        //ewok.acquire();
         return ewok;
     }
 
     private static class SingletonHolder {
         private static Ewoks instance = new Ewoks();
     }
-    public static Ewoks getInstance(){
+    public static Ewoks  getInstance(){
         return SingletonHolder.instance;
+    }
+
+    public synchronized boolean  useResource ( List<Integer> list){
+        boolean output =true;
+        Ewok e;
+        for(int i=0 ; i<list.size() && !output;i++){
+            e = getEwok(list.get(i));
+            if(!e.available)
+                output=false;
+        }
+        if(output) {
+            for (int i = 0; i < list.size() && !output; i++) {
+                e = getEwok(list.get(i));
+                e.acquire();
+            }
+        }
+        return output;
+    }
+    public void release(List<Integer> list){ //check
+        Ewok e;
+        for (int i = 0; i < list.size() ; i++) {
+            e = getEwok(list.get(i));
+            e.release();
+        }
     }
 
 }

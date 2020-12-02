@@ -141,7 +141,9 @@ public abstract class MicroService implements Runnable {
      * Signals the event loop that it must terminate after handling the current
      * message.
      */
-    protected final void terminate() { }
+    protected final void terminate() {
+        this.terminate=true;
+    }
 
     /**
      * @return the name of the service - the service name is given to it in the
@@ -157,8 +159,8 @@ public abstract class MicroService implements Runnable {
      */
     @Override
     public final void run() {
-        initialize();
         messageBus.register(this);
+        initialize();
         Message m ;
         while (!terminate){
             try {

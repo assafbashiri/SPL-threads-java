@@ -8,9 +8,7 @@ import bgu.spl.mics.Callback;
 import bgu.spl.mics.Event;
 import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
-import bgu.spl.mics.application.messages.AttackEvent;
-import bgu.spl.mics.application.messages.BombDestroyerEvent;
-import bgu.spl.mics.application.messages.DeactivationEvent;
+import bgu.spl.mics.application.messages.*;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
 
@@ -28,6 +26,7 @@ public class LeiaMicroservice extends MicroService {
     Diary diary = Diary.getInstance();
 
 
+
     public LeiaMicroservice(Attack[] attacks) {
         super("Leia");
 		this.attacks = attacks;
@@ -35,13 +34,26 @@ public class LeiaMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
+      /*  Callback<AttackEvent> attackEventCallback =  new Callback<AttackEvent>() {
+            @Override
+            public void call(AttackEvent c) {
+                c.workers();
+            }
+        }; */
         for (Attack a  : attacks){
             AttackEvent attack = new AttackEvent(this.name , a);
             Future <Boolean> future = sendEvent(attack);
-            this.callBacksForMessage.put(AttackEvent.class , (Callback) future);//check
+            //this.callBacksForMessage.put(AttackEvent.class , attackEventCallback);//check
             attackStatus.put(attack , future);
 
         }
+        Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
+            terminate();
+        };
+        this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
+        Callback<FinishAttackBroadcast> finishAttackBroadcastCallback = c -> {
+        };
+
         int num = diary.getTotalAttack();
         for (Future f : attackStatus.values()){
             f.get();
@@ -49,9 +61,9 @@ public class LeiaMicroservice extends MicroService {
         DeactivationEvent deactivationEvent = new DeactivationEvent();
         Future future = this.sendEvent(deactivationEvent);
         future.get();
-        BombDestroyerEvent bombDestroyerEvent = new BombDestroyerEvent();
-        Future future1 = this.sendEvent(bombDestroyerEvent);
-        future1.get();
+        //BombDestroyerEvent bombDestroyerEvent = new BombDestroyerEvent();
+        //Future future1 = this.sendEvent(bombDestroyerEvent);
+        //future1.get();
         //לחסל את כולם
 
     	

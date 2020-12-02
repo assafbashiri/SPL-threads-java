@@ -1,8 +1,10 @@
 package bgu.spl.mics.application.services;
 
 
+import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
+import bgu.spl.mics.application.messages.FinishBombDestroyerBroadcast;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 
 /**
@@ -23,7 +25,13 @@ public class HanSoloMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
-        messageBus.subscribeEvent(AttackEvent.class , this);
+        Callback<AttackEvent> attackEventCallback = c -> c.workers();
+
+        this.subscribeEvent(AttackEvent.class , attackEventCallback);
+        Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
+            terminate();
+        };
+        this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
         }
 
 

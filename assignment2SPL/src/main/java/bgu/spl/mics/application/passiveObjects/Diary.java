@@ -34,4 +34,8 @@ public class Diary {
         return Diary.SingletonHolder.instance;
     }
 
+    public synchronized void addAttack(){
+        totalAttack++;
+    }
+
 }

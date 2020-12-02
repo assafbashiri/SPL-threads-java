@@ -11,8 +11,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class MessageBusImpl implements MessageBus {
     ConcurrentHashMap<MicroService, LinkedBlockingQueue<Message>> messagesQueues; // map: key = MicroService, value = message queue of this MicroService
-    ConcurrentHashMap<Class<? extends Message>, ConcurrentLinkedQueue<MicroService>> eventType; // map: key = TYPE (event/broadcast), value = linked queue of MicroService's that subscribed to this message
-    ConcurrentHashMap<Class<? extends Message>, ConcurrentLinkedQueue<MicroService>> broadcastType;
+    final ConcurrentHashMap<Class<? extends Message>, ConcurrentLinkedQueue<MicroService>> eventType; // map: key = TYPE (event/broadcast), value = linked queue of MicroService's that subscribed to this message
+    final ConcurrentHashMap<Class<? extends Message>, ConcurrentLinkedQueue<MicroService>> broadcastType;
     ConcurrentHashMap<Event, Future> futureOfEvent; // map: key = event, value = future connected this event
 
     private MessageBusImpl(){
@@ -24,26 +24,30 @@ public class MessageBusImpl implements MessageBus {
     }
     @Override
     public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {//כשאדם רוצה להירשם לסוג מסויים של אירוע
-        if (messagesQueues.containsKey(m)) {
-            if (!eventType.containsKey(type)) {
-                ConcurrentLinkedQueue<MicroService> queue = new ConcurrentLinkedQueue<MicroService>();
-                queue.add(m);
-                eventType.put(type,queue);
-            } else {
-                eventType.get(type).add(m);
+        synchronized (eventType) {
+            if (messagesQueues.containsKey(m)) {
+                if (!eventType.containsKey(type)) {
+                    ConcurrentLinkedQueue<MicroService> queue = new ConcurrentLinkedQueue<MicroService>();
+                    queue.add(m);
+                    eventType.put(type, queue);
+                } else {
+                    eventType.get(type).add(m);
+                }
             }
         }
     }
 
     @Override
     public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) { //כשאדם רוצה להירשם לסוג מסויים של אירוע
-        if(messagesQueues.containsKey(m)){
-            if(!broadcastType.containsKey(type)){
-                ConcurrentLinkedQueue<MicroService> queue = new ConcurrentLinkedQueue<MicroService>();
-                queue.add(m);
-                broadcastType.put(type,queue);
-            } else {
-                broadcastType.get(type).add(m);
+        synchronized (broadcastType) {
+            if (messagesQueues.containsKey(m)) {
+                if (!broadcastType.containsKey(type)) {
+                    ConcurrentLinkedQueue<MicroService> queue = new ConcurrentLinkedQueue<MicroService>();
+                    queue.add(m);
+                    broadcastType.put(type, queue);
+                } else {
+                    broadcastType.get(type).add(m);
+                }
             }
         }
     }
@@ -59,10 +63,12 @@ public class MessageBusImpl implements MessageBus {
 
     @Override
     public void sendBroadcast(Broadcast b) {
-        ConcurrentLinkedQueue<MicroService> queue = broadcastType.get(b.getClass());
-        if(queue.size()>0){
-            for(MicroService m :queue) {
-                messagesQueues.get(m).add(b);
+        synchronized (broadcastType) {
+            ConcurrentLinkedQueue<MicroService> queue = broadcastType.get(b.getClass());
+            if (queue.size() > 0) {
+                for (MicroService m : queue) {
+                    messagesQueues.get(m).add(b);
+                }
             }
         }
 
@@ -71,14 +77,16 @@ public class MessageBusImpl implements MessageBus {
 
     @Override
     public <T> Future<T> sendEvent(Event<T> e) {
-        ConcurrentLinkedQueue<MicroService> queue = eventType.get(e.getClass());
-        if(queue.size()>0){
-            MicroService m =queue.remove();
-            Future<T> future = new Future<>();
-            futureOfEvent.put(e,future);
-            messagesQueues.get(m).add(e);
-            queue.add(m);
-            return future;
+        synchronized (eventType) {
+            ConcurrentLinkedQueue<MicroService> queue = eventType.get(e.getClass());
+            if (queue.size() > 0) {
+                MicroService m = queue.remove();
+                Future<T> future = new Future<>();
+                futureOfEvent.put(e, future);
+                messagesQueues.get(m).add(e);
+                queue.add(m);
+                return future;
+            }
         }
         return null;//check
     }
