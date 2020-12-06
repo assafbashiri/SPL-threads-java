@@ -69,6 +69,7 @@ public class MessageBusImpl implements MessageBus {
                 for (MicroService m : queue) {
                     messagesQueues.get(m).add(b);
                 }
+                System.out.println("heyyyy");
             }
         }
 

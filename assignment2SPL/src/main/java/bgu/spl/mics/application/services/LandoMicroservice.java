@@ -8,6 +8,7 @@ import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.FinishBombDestroyerBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.example.messages.ExampleEvent;
+import bgu.spl.mics.application.Main;
 
 /**
  * LandoMicroservice
@@ -31,9 +32,9 @@ public class LandoMicroservice  extends MicroService {
         this.subscribeEvent(BombDestroyerEvent.class, bombDestroyerEventCallback);
         Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
             terminate();
+            System.out.println(this.name+ "  finish");
         };
         this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
-
-       
+        Main.ly.countDown();
     }
 }

@@ -8,6 +8,7 @@ import bgu.spl.mics.application.messages.FinishBombDestroyerBroadcast;
 import bgu.spl.mics.application.messages.FinishDeactivationBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
+import bgu.spl.mics.application.Main;
 
 /**
  * R2D2Microservices is in charge of the handling {@link DeactivationEvent}.
@@ -34,9 +35,10 @@ public class R2D2Microservice extends MicroService {
        this.subscribeEvent(DeactivationEvent.class,deactivationEventCallback);
        Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
            terminate();
+           System.out.println(this.name+ "  finish");
        };
        this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
-
+       Main.ly.countDown();
     }
 
 }

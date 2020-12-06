@@ -8,8 +8,11 @@ import bgu.spl.mics.application.messages.FinishBombDestroyerBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewok;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
+import bgu.spl.mics.application.Main;
+
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 
 /**
@@ -33,25 +36,20 @@ public class C3POMicroservice extends MicroService {
         Callback<AttackEvent> attackEventCallback = c -> {
              List<Integer> list = c.workers();
             Ewok e;
-             boolean use = ewoks.useResource(list);
-             while (!use){
-                 use = ewoks.useResource(list);
-             }
+             ewoks.useResource(list);
             Thread.sleep(c.getDuration());
              ewoks.release(list);
-            FinishAttackBroadcast b = new FinishAttackBroadcast();
-            sendBroadcast(b);
             diary.addAttack();
             messageBus.complete(c ,true);
-
-
         };
         this.subscribeEvent(AttackEvent.class, attackEventCallback);
 
 
         Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
             terminate();
+            System.out.println(this.name+ "  finish");
         };
         this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
+        Main.ly.countDown();
     }
 }

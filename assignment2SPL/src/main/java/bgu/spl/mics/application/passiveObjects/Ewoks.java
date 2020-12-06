@@ -25,11 +25,19 @@ public class Ewoks {
             list.put(serialNumber,new Ewok(serialNumber));
     }
 
-    public  Ewok  getEwok(int serialNumber)
-    {
+    public  Ewok  getEwok(int serialNumber) throws InterruptedException {
         Ewok ewok = list.get(serialNumber);
-        //ewok.acquire();
-        return ewok;
+        synchronized (ewok) {
+            while (!ewok.available) {
+                try {
+                    ewok.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            ewok.acquire();
+            return ewok;
+        }
     }
 
     private static class SingletonHolder {
@@ -39,28 +47,26 @@ public class Ewoks {
         return SingletonHolder.instance;
     }
 
-    public synchronized boolean  useResource ( List<Integer> list){
-        boolean output =true;
+    public void useResource ( List<Integer> list) throws InterruptedException {
         Ewok e;
-        for(int i=0 ; i<list.size() && output ;i++){
+        for(int i=0 ; i<list.size();i++){
             e = getEwok(list.get(i));
-            if(!e.available)
-                output=false;
         }
-        if(output) {
-            for (int i = 0; i < list.size(); i++) {
-                e = getEwok(list.get(i));
-                e.acquire();
-            }
-        }
-        return output;
     }
-    public void release(List<Integer> list){ //check
+
+
+    public void release(List<Integer> list) throws InterruptedException { //check
         Ewok e;
         for (int i = 0; i < list.size() ; i++) {
-            e = getEwok(list.get(i));
-            e.release();
+
+            e = this.list.get(list.get(i));
+            synchronized (e) {
+                e.release();
+                e.notifyAll();
+            }
         }
+
+
     }
 
 

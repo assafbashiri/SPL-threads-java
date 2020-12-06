@@ -12,7 +12,7 @@ public class  Ewok {
 
   public Ewok(int serialNumber){
       this.serialNumber=serialNumber;
-      available=true;
+      available = true;
   }
     /**
      * Acquires an Ewok
@@ -20,7 +20,7 @@ public class  Ewok {
     public void  acquire() {//הופכת מאמת לשקר
         //if(this.available!=true)
           //  throw new IllegalArgumentException("before call acquire act the Ewok need to be available ");
-        available=false;
+        available = false;
 
     }
 

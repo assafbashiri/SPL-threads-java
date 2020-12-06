@@ -11,6 +11,8 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.*;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
+import bgu.spl.mics.application.Main;
+
 
 /**
  * LeiaMicroservices Initialized with Attack objects, and sends them as  {@link AttackEvent}.
@@ -33,17 +35,11 @@ public class LeiaMicroservice extends MicroService {
     }
 
     @Override
-    protected void initialize() {
-      /*  Callback<AttackEvent> attackEventCallback =  new Callback<AttackEvent>() {
-            @Override
-            public void call(AttackEvent c) {
-                c.workers();
-            }
-        }; */
+    protected void initialize() throws InterruptedException {
+        Main.ly.await();
         for (Attack a  : attacks){
             AttackEvent attack = new AttackEvent(this.name , a);
             Future <Boolean> future = sendEvent(attack);
-            //this.callBacksForMessage.put(AttackEvent.class , attackEventCallback);//check
             attackStatus.put(attack , future);
 
         }
@@ -57,14 +53,17 @@ public class LeiaMicroservice extends MicroService {
         for (Future f : attackStatus.values()){
             f.get();
         }
+        System.out.println("finish attack");
         DeactivationEvent deactivationEvent = new DeactivationEvent();
         Future future = this.sendEvent(deactivationEvent);
         future.get();
+        System.out.println("finish deactivation");
         BombDestroyerEvent bombDestroyerEvent = new BombDestroyerEvent();
         Future future1 = this.sendEvent(bombDestroyerEvent);
         future1.get();
-        FinishAttackBroadcast b = new FinishAttackBroadcast();
+        FinishBombDestroyerBroadcast b = new FinishBombDestroyerBroadcast();
         this.sendBroadcast(b);
+        System.out.println("finish bomb");
         //terminate();
 
     	
