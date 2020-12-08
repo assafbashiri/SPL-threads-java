@@ -39,19 +39,20 @@ public class HanSoloMicroservice extends MicroService {
             ewoks.useResource(list);
             Thread.sleep(c.getDuration());
             ewoks.release(list);
-
             diary.addAttack();
             messageBus.complete(c ,true);
-
+            diary.setHanSoloFinish();
+            System.out.println(diary.getHanSoloFinish());
         };
         this.subscribeEvent(AttackEvent.class, attackEventCallback);
         Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
             terminate();
+            diary.setHanSoloTerminate();
+            System.out.println(diary.getHanSoloTerminate());
             System.out.println(this.name+ "  finish");
         };
         this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
         Main.ly.countDown();
-        Main.HanSoloFinish = System.currentTimeMillis();
     }
     }
 

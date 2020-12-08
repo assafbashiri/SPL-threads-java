@@ -41,12 +41,12 @@ public class C3POMicroservice extends MicroService {
              ewoks.release(list);
             diary.addAttack();
             messageBus.complete(c ,true);
+            diary.setC3POFinish();
         };
         this.subscribeEvent(AttackEvent.class, attackEventCallback);
-
-
         Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
             terminate();
+            diary.setC3POTerminate();
             System.out.println(this.name+ "  finish");
         };
         this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);

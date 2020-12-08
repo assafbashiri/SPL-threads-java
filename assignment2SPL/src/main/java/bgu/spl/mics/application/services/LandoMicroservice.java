@@ -17,6 +17,7 @@ import bgu.spl.mics.application.Main;
  */
 public class LandoMicroservice  extends MicroService {
     private long duration;
+    Diary diary = Diary.getInstance();
     public LandoMicroservice(long duration) {
 
         super("Lando");
@@ -28,10 +29,12 @@ public class LandoMicroservice  extends MicroService {
         Callback<BombDestroyerEvent> bombDestroyerEventCallback = c -> {
             Thread.sleep(duration);//check
             messageBus.complete( c , true);
+            diary.setLandoDestroy();
         };
         this.subscribeEvent(BombDestroyerEvent.class, bombDestroyerEventCallback);
         Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
             terminate();
+            diary.setLandoTerminate();
             System.out.println(this.name+ "  finish");
         };
         this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);

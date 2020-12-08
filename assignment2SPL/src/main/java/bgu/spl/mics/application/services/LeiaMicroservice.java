@@ -45,6 +45,7 @@ public class LeiaMicroservice extends MicroService {
         }
         Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
             terminate();
+            diary.setLeiaTerminate();
         };
         this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
         //Callback<FinishAttackBroadcast> finishAttackBroadcastCallback = c -> {

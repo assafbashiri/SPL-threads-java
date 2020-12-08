@@ -20,6 +20,7 @@ import bgu.spl.mics.application.Main;
  */
 public class R2D2Microservice extends MicroService {
     public long duration;
+    Diary diary = Diary.getInstance();
     public R2D2Microservice(long duration) {
         super("R2D2");
         this.duration=duration;
@@ -31,10 +32,12 @@ public class R2D2Microservice extends MicroService {
         Callback<DeactivationEvent> deactivationEventCallback = c -> {
             Thread.sleep(duration);
             messageBus.complete(c , true);
+            diary.setC3POFinish();
         };
        this.subscribeEvent(DeactivationEvent.class,deactivationEventCallback);
        Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
            terminate();
+           diary.setR2D2Terminate();
            System.out.println(this.name+ "  finish");
        };
        this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);

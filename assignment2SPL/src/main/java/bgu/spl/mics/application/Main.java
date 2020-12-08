@@ -1,9 +1,7 @@
 package bgu.spl.mics.application;
 
-import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
-import bgu.spl.mics.application.passiveObjects.Ewok;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 import bgu.spl.mics.application.services.*;
 import com.google.gson.*;
@@ -11,7 +9,6 @@ import com.google.gson.stream.JsonReader;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -23,11 +20,12 @@ import java.util.concurrent.CountDownLatch;
 public class Main {
 	public static CountDownLatch ly = new CountDownLatch(4);
 
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		int LandoDuration = 0;
 		int EwoksNumber = 0;
 		int R2d2Duration = 0;
 		List attacksList = new ArrayList();
+		Diary diary = Diary.getInstance();
 		Comparator<Integer> comparator = new Comparator<Integer>() {
 			@Override
 			public int compare(Integer o1, Integer o2) {
@@ -81,12 +79,57 @@ public class Main {
 		Thread hanSolo = new Thread(new HanSoloMicroservice());
 		Thread lando = new Thread(new LandoMicroservice(LandoDuration));
 		Thread r2D2 = new Thread(new R2D2Microservice(R2d2Duration));
-		c3PO.start();
 		hanSolo.start();
+		c3PO.start();
 		r2D2.start();
 		lando.start();
 		leia.start();
+		hanSolo.join();
+		c3PO.join();
+		r2D2.join();
+		lando.join();
+		leia.join();
+
+
+		//create the output
+
+		FileOutputStream fileOutputStream = new FileOutputStream(args[1]);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json = gson.toJson("HanSolo finish attack in: " + diary.getHanSoloFinish());
+		String json1 = gson.toJson("HanSolo terminate: " + diary.getHanSoloTerminate());
+		String json2 = gson.toJson("C3PO finish attack in: " + diary.getC3POFinish());
+		String json3 = gson.toJson("C3PO terminate: " + diary.getC3POTerminate());
+		String json4 = gson.toJson("R2D2 finish attack in: " + diary.getR2D2Deactivate());
+		String json5 = gson.toJson("R2D2 terminate: " + diary.getR2D2Terminate());
+		String json6 = gson.toJson("Lando finish attack in: " + diary.getLandoDestroy());
+		String json7 = gson.toJson("Lando terminate: " + diary.getLandoTerminate());
+		//String json8 = gson.toJson("hansolo finish attack in: " + diary.getHanSoloFinish());
+		String json8 = gson.toJson("Leia terminate: " + diary.getLeiaTerminate());
+		fileOutputStream.write(json.getBytes());
+		fileOutputStream.write(json1.getBytes());
+		fileOutputStream.write(json2.getBytes());
+		fileOutputStream.write(json3.getBytes());
+		fileOutputStream.write(json4.getBytes());
+		fileOutputStream.write(json5.getBytes());
+		fileOutputStream.write(json6.getBytes());
+		fileOutputStream.write(json7.getBytes());
+		fileOutputStream.write(json8.getBytes());
+
+	}
+	public static void printToFile(String filename,Object... objs2print){
+		try {
+			FileOutputStream fos = new FileOutputStream(filename);
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();;
+			for (int i = 0;  i< objs2print.length; i++) {
+				String str=gson.toJson(objs2print[i]);
+				fos.write(str.getBytes());
+			}
+			fos.close();
 		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public  static void readInput(String path, List <Attack> attacks , int R2D2Duration , int LandoDuration , int ewoksNumber) throws FileNotFoundException {
 
