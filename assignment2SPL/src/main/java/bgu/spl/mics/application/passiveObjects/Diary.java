@@ -33,6 +33,10 @@ public class Diary {
         return totalAttack;
     }
 
+    public void resetNumberAttacks() {
+        totalAttack.set(0);
+    }
+
     private static class SingletonHolder {
         private static Diary instance = new Diary();
     }

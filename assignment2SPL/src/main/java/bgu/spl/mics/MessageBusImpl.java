@@ -80,13 +80,15 @@ public class MessageBusImpl implements MessageBus {
     public <T> Future<T> sendEvent(Event<T> e) {
         synchronized (eventType) {
             ConcurrentLinkedQueue<MicroService> queue = eventType.get(e.getClass());
-            if (queue.size() > 0) {
-                MicroService m = queue.remove();
-                Future<T> future = new Future<>();
-                futureOfEvent.put(e, future);
-                messagesQueues.get(m).add(e);
-                queue.add(m);
-                return future;
+            if (queue != null) {
+                if (queue.size() > 0) {
+                    MicroService m = queue.remove();
+                    Future<T> future = new Future<>();
+                    futureOfEvent.put(e, future);
+                    messagesQueues.get(m).add(e);
+                    queue.add(m);
+                    return future;
+                }
             }
         }
         return null;//check

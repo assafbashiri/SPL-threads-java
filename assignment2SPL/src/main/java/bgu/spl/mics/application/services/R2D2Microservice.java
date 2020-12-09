@@ -2,13 +2,10 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
-import bgu.spl.mics.application.messages.BombDestroyerEvent;
+import bgu.spl.mics.application.Main;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.FinishBombDestroyerBroadcast;
-import bgu.spl.mics.application.messages.FinishDeactivationBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
-import bgu.spl.mics.application.passiveObjects.Ewoks;
-import bgu.spl.mics.application.Main;
 
 /**
  * R2D2Microservices is in charge of the handling {@link DeactivationEvent}.
@@ -32,7 +29,7 @@ public class R2D2Microservice extends MicroService {
         Callback<DeactivationEvent> deactivationEventCallback = c -> {
             Thread.sleep(duration);
             messageBus.complete(c , true);
-            diary.setC3POFinish();
+            diary.setR2D2Deactivate();
         };
        this.subscribeEvent(DeactivationEvent.class,deactivationEventCallback);
        Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {

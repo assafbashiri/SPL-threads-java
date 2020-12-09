@@ -3,13 +3,13 @@ package bgu.spl.mics.application;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
+import bgu.spl.mics.application.passiveObjects.Input;
+import bgu.spl.mics.application.passiveObjects.JsonInputReader;
+
 import bgu.spl.mics.application.services.*;
 import com.google.gson.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -34,58 +34,50 @@ public class Main {
 				return o1-o2;
 			}
 		};
-		File input = new File(args[0]);
-			JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
-			JsonObject fileObject = fileElement.getAsJsonObject();
-			//extract the data
+		//Input json = JsonInputReader.
+		Input json = JsonInputReader.getInputFromJson("/Users/assafbashiri/Desktop/SPL-threads-java-main/assignment2SPL/input.json");
+	//	File input = new File(args[0]);
+	//	JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
+//		JsonObject fileObject = fileElement.getAsJsonObject();
+		//extract the data
 
-			//MICROSERVICE AND RESOURCES
+		//MICROSERVICE AND RESOURCES
 
-			LandoDuration = fileObject.get("Lando").getAsInt();
-			EwoksNumber = fileObject.get("Ewoks").getAsInt();
-			R2d2Duration = fileObject.get("R2D2").getAsInt();
+		LandoDuration = json.getLando();
+		EwoksNumber = json.getEwoks();
+		Ewoks ewoks = Ewoks.getInstance();
+		R2d2Duration = json.getR2D2();
+		Attack [] attacks = json.getAttacks();
 
-			//Process the attacks
-
-			JsonArray jsonArrayAttacks = fileObject.get("attacks").getAsJsonArray();
-			for (JsonElement attackElement : jsonArrayAttacks){
-				List list = new ArrayList();//FOR THE ATTACKS
-
-				//Get the JsonObject:
-				JsonObject attackJsonObject = attackElement.getAsJsonObject();
-				//Extract data
-				int duration = attackJsonObject.get("duration").getAsInt();
-				//Extract serials array
-				JsonArray lis = attackJsonObject.get("serials").getAsJsonArray();
-				for (JsonElement serialElement : lis){
-					list.add(serialElement.getAsInt());
-				}
-				//sorting the list
-				list.sort(comparator);
-				System.out.println(list.toString());
-				Attack attack = new Attack(list , duration);//new attack
-				attacksList.add(attack);
-
-			}
-			Ewoks ewoks = Ewoks.getInstance();
-			for (int i = 1 ; i <= EwoksNumber ; i++){
-				ewoks.addEwok(i);
-			}
-		Attack[] attacks = new Attack[attacksList.size()];
-		for (int i=0 ; i<attacksList.size() ; i++){
-			attacks[i] = (Attack) attacksList.get(i);
+		//initalize thr ewoks
+		for (int i = 1 ; i <= EwoksNumber ; i++)
+		{
+			ewoks.addEwok(i);
 		}
+		//finish initialize
+
+
+		//sort the serials for the attacks
+		for (int i = 0 ; i < attacks.length ; i++)
+		{
+			attacks[i].getSerials().sort(comparator);
+		}
+		//finish sorting
+
 		//initial the program
 		Thread c3PO = new Thread(new C3POMicroservice());
 		Thread leia = new Thread(new LeiaMicroservice(attacks));
 		Thread hanSolo = new Thread(new HanSoloMicroservice());
 		Thread lando = new Thread(new LandoMicroservice(LandoDuration));
 		Thread r2D2 = new Thread(new R2D2Microservice(R2d2Duration));
+
+		//start the attack
 		hanSolo.start();
 		c3PO.start();
 		r2D2.start();
 		lando.start();
 		leia.start();
+
 		hanSolo.join();
 		c3PO.join();
 		r2D2.join();
@@ -102,8 +94,8 @@ public class Main {
 			helper = helper * (-1);
 			result = diary.getC3POFinish();
 		}
+		/*
 		FileOutputStream fileOutputStream = new FileOutputStream(args[1]);
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String json0 = gson.toJson("There are " + diary.getTotalAttack() + " attacks. \n");
 		String json01 = gson.toJson("HanSolo and CSPO finished there attacks in " +(helper)+".\n");
 		String json02 = gson.toJson("All threads terminates " + (diary.maxTreminate()-result));
@@ -118,7 +110,8 @@ public class Main {
 		String json7 = gson.toJson("Lando terminate: " + diary.getLandoTerminate());
 		//String json8 = gson.toJson("hansolo finish attack in: " + diary.getHanSoloFinish());
 		String json8 = gson.toJson("Leia terminate: " + diary.getLeiaTerminate());
-		*/
+
+		FileWriter writer = new FileWriter(args[1]);
 		fileOutputStream.write(json0.getBytes());
 		fileOutputStream.write(json01.getBytes());
 		fileOutputStream.write(json02.getBytes());
@@ -130,6 +123,13 @@ public class Main {
 		fileOutputStream.write(json7.getBytes());
 		fileOutputStream.write(json8.getBytes());
 		*/
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		FileWriter writer = new FileWriter("/Users/assafbashiri/Desktop/SPL-threads-java-main/assignment2SPL/Output.json");
+		gson.toJson(diary , writer);
+		writer.flush();
+		writer.close();
+
+		//Gson gson5 = new GsonBuilder().setPrettyPrinting().create();
 
 	}
 	public static void printToFile(String filename,Object... objs2print){
