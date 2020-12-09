@@ -1,6 +1,8 @@
 package bgu.spl.mics.application.passiveObjects;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -117,5 +119,19 @@ public class Diary {
 
     public void setLeiaTerminate() {
         LeiaTerminate = System.currentTimeMillis();
+    }
+    public long maxTreminate(){
+        List<Long> list = new ArrayList<Long>();
+        list.add(getHanSoloTerminate());
+        list.add(getC3POTerminate());
+        list.add(getR2D2Terminate());
+        list.add(getLandoDestroy());
+        list.add(getLeiaTerminate());
+        long max = 0;
+        for (long lon : list){
+            if (max < lon)
+                max = lon;
+        }
+        return max;
     }
 }

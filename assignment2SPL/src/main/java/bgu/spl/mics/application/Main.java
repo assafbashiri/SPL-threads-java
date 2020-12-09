@@ -5,9 +5,11 @@ import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 import bgu.spl.mics.application.services.*;
 import com.google.gson.*;
-import com.google.gson.stream.JsonReader;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -32,7 +34,7 @@ public class Main {
 				return o1-o2;
 			}
 		};
-		File input = new File("/Users/assafbashiri/Desktop/SPL-threads-java-main/assignment2SPL/src/main/java/bgu/spl/mics/application/input.json");
+		File input = new File(args[0]);
 			JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
 			JsonObject fileObject = fileElement.getAsJsonObject();
 			//extract the data
@@ -93,8 +95,19 @@ public class Main {
 
 		//create the output
 
+		//for json01 , json02
+		long helper = diary.getHanSoloFinish()-diary.getC3POFinish();
+		long result = diary.getHanSoloFinish();
+		if (helper < 0) {
+			helper = helper * (-1);
+			result = diary.getC3POFinish();
+		}
 		FileOutputStream fileOutputStream = new FileOutputStream(args[1]);
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json0 = gson.toJson("There are " + diary.getTotalAttack() + " attacks. \n");
+		String json01 = gson.toJson("HanSolo and CSPO finished there attacks in " +(helper)+".\n");
+		String json02 = gson.toJson("All threads terminates " + (diary.maxTreminate()-result));
+		/*
 		String json = gson.toJson("HanSolo finish attack in: " + diary.getHanSoloFinish());
 		String json1 = gson.toJson("HanSolo terminate: " + diary.getHanSoloTerminate());
 		String json2 = gson.toJson("C3PO finish attack in: " + diary.getC3POFinish());
@@ -105,15 +118,18 @@ public class Main {
 		String json7 = gson.toJson("Lando terminate: " + diary.getLandoTerminate());
 		//String json8 = gson.toJson("hansolo finish attack in: " + diary.getHanSoloFinish());
 		String json8 = gson.toJson("Leia terminate: " + diary.getLeiaTerminate());
-		fileOutputStream.write(json.getBytes());
-		fileOutputStream.write(json1.getBytes());
-		fileOutputStream.write(json2.getBytes());
+		*/
+		fileOutputStream.write(json0.getBytes());
+		fileOutputStream.write(json01.getBytes());
+		fileOutputStream.write(json02.getBytes());
+		/*
 		fileOutputStream.write(json3.getBytes());
 		fileOutputStream.write(json4.getBytes());
 		fileOutputStream.write(json5.getBytes());
 		fileOutputStream.write(json6.getBytes());
 		fileOutputStream.write(json7.getBytes());
 		fileOutputStream.write(json8.getBytes());
+		*/
 
 	}
 	public static void printToFile(String filename,Object... objs2print){
@@ -129,19 +145,6 @@ public class Main {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public  static void readInput(String path, List <Attack> attacks , int R2D2Duration , int LandoDuration , int ewoksNumber) throws FileNotFoundException {
-
-		Gson gson = new Gson();
-//		JsonReader reader = new JsonReader(new FileReader("input.json"));
-//		JsonParser parser = gson.fromJson(reader , JsonParser.class);
-		try (		JsonReader reader = new JsonReader(new FileReader("/input.json"))
-		) { attacks = gson.fromJson( reader , attacks.getClass());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 	}
 }
 
