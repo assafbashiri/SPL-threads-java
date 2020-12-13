@@ -32,9 +32,6 @@ public class  Ewok {
           //  throw new IllegalArgumentException("before call acquire act the Ewok need to be not available ");
         available=true;
     }
-    public int getSerialNumber(){
-        return serialNumber;
-    }
     public boolean getAvailable(){
         return available;
     }

@@ -36,34 +36,32 @@ public class LeiaMicroservice extends MicroService {
 
     @Override
     protected void initialize() throws InterruptedException {
-        Main.ly.await();
-        for (Attack a  : attacks){
+        Main.ly.await(); //wait for everyone else
+        for (Attack a  : attacks){ //send all the attacks
             AttackEvent attack = new AttackEvent(this.name , a);
             Future <Boolean> future = sendEvent(attack);
             attackStatus.put(attack , future);
 
         }
-        Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
+        Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> { //finish and terminate
             terminate();
             diary.setLeiaTerminate();
         };
-        this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
-        //Callback<FinishAttackBroadcast> finishAttackBroadcastCallback = c -> {
-//        };
+        this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast); //subsribe finish and terminate
 
-        for (Future f : attackStatus.values()){
+        for (Future f : attackStatus.values()){ //wait for all the attack complete
             f.get();
         }
-        System.out.println("finish attack");
-        DeactivationEvent deactivationEvent = new DeactivationEvent();
+        //System.out.println("finish attack");
+        DeactivationEvent deactivationEvent = new DeactivationEvent(); //for R2D2
         Future future = this.sendEvent(deactivationEvent);
-        future.get();
-        System.out.println("finish deactivation");
-        BombDestroyerEvent bombDestroyerEvent = new BombDestroyerEvent();
+        future.get(); //wait to R2D2
+        //System.out.println("finish deactivation");
+        BombDestroyerEvent bombDestroyerEvent = new BombDestroyerEvent(); //for lando
         Future future1 = this.sendEvent(bombDestroyerEvent);
-        future1.get();
-        FinishBombDestroyerBroadcast b = new FinishBombDestroyerBroadcast();
-        this.sendBroadcast(b);
+        future1.get(); // wait to lando
+        FinishBombDestroyerBroadcast b = new FinishBombDestroyerBroadcast(); //subsribe that everyone need to terminate
+        this.sendBroadcast(b); //tell everyone to terminate
         System.out.println("finish bomb");
         //terminate();
 

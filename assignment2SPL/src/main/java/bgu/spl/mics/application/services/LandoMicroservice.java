@@ -26,18 +26,19 @@ public class LandoMicroservice  extends MicroService {
 
     @Override
     protected void initialize() {
-        Callback<BombDestroyerEvent> bombDestroyerEventCallback = c -> {
-            Thread.sleep(duration);//check
+        Callback<BombDestroyerEvent> bombDestroyerEventCallback = c -> { //bombDestroy
+            Thread.sleep(duration);
             messageBus.complete( c , true);
             diary.setLandoDestroy();
         };
-        this.subscribeEvent(BombDestroyerEvent.class, bombDestroyerEventCallback);
-        Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
+        this.subscribeEvent(BombDestroyerEvent.class, bombDestroyerEventCallback); //subscribe bombDestroy
+
+        Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> { //finish and terminate
             terminate();
             diary.setLandoTerminate();
             System.out.println(this.name+ "  finish");
         };
         this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
-        Main.ly.countDown();
+        Main.ly.countDown();//one less tread to wait for
     }
 }

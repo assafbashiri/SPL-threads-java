@@ -26,19 +26,18 @@ public class R2D2Microservice extends MicroService {
 
     @Override
     protected void initialize() {
-        Callback<DeactivationEvent> deactivationEventCallback = c -> {
+        Callback<DeactivationEvent> deactivationEventCallback = c -> { //deactivation
             Thread.sleep(duration);
             messageBus.complete(c , true);
             diary.setR2D2Deactivate();
         };
-       this.subscribeEvent(DeactivationEvent.class,deactivationEventCallback);
-       Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
+       this.subscribeEvent(DeactivationEvent.class,deactivationEventCallback); //subsribe deactivation
+       Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> { // finish and terminate
            terminate();
            diary.setR2D2Terminate();
-           System.out.println(this.name+ "  finish");
        };
-       this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
-       Main.ly.countDown();
+       this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast); //subsribe finish terminate
+       Main.ly.countDown(); // one less tread to wait for him
     }
 
 }

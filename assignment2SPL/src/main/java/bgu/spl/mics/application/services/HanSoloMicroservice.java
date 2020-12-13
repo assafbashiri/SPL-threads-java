@@ -4,7 +4,6 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
-import bgu.spl.mics.application.messages.FinishAttackBroadcast;
 import bgu.spl.mics.application.messages.FinishBombDestroyerBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewok;
@@ -33,7 +32,7 @@ public class HanSoloMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
-        Callback<AttackEvent> attackEventCallback = c -> {
+        Callback<AttackEvent> attackEventCallback = c -> { //what to do when we get a attack
             List<Integer> list = c.workers();
             Ewok e;
             ewoks.useResource(list);
@@ -42,18 +41,18 @@ public class HanSoloMicroservice extends MicroService {
             diary.addAttack();
             messageBus.complete(c ,true);
             diary.setHanSoloFinish();
-            System.out.println(diary.getHanSoloFinish());
+            //System.out.println(diary.getHanSoloFinish());
         };
-        this.subscribeEvent(AttackEvent.class, attackEventCallback);
-        Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
+        this.subscribeEvent(AttackEvent.class, attackEventCallback); //subscribe attack event
+        Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> { //finish and terminate
             terminate();
             diary.setHanSoloTerminate();
-            System.out.println(diary.getHanSoloTerminate());
-            System.out.println(this.name+ "  finish");
+            //System.out.println(diary.getHanSoloTerminate());
+            //System.out.println(this.name+ "  finish");
         };
         this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
-        Main.ly.countDown();
+        Main.ly.countDown(); //one less tread that leia need to wait for
     }
-    }
+}
 
 

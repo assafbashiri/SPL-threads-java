@@ -20,22 +20,22 @@ public class Ewoks {
         list=new ConcurrentHashMap<>();
     }
 
-    public void addEwok (int serialNumber){
+    public void addEwok (int serialNumber){ //new ewok
         if(list.get(serialNumber)==null)
             list.put(serialNumber,new Ewok(serialNumber));
     }
 
-    public  Ewok  getEwok(int serialNumber) throws InterruptedException {
+    public  Ewok  getEwok(int serialNumber) {
         Ewok ewok = list.get(serialNumber);
-        synchronized (ewok) {
+        synchronized (ewok) { //ewok lock
             while (!ewok.available) {
                 try {
-                    ewok.wait();
+                    ewok.wait(); //release key until notify
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
             }
-            ewok.acquire();
+            ewok.acquire(); //not available
             return ewok;
         }
     }
@@ -47,7 +47,7 @@ public class Ewoks {
         return SingletonHolder.instance;
     }
 
-    public void useResource ( List<Integer> list) throws InterruptedException {
+    public void useResource ( List<Integer> list) {
         Ewok e;
         for(int i=0 ; i<list.size();i++){
             e = getEwok(list.get(i));
@@ -55,14 +55,13 @@ public class Ewoks {
     }
 
 
-    public void release(List<Integer> list) throws InterruptedException { //check
+    public void release(List<Integer> list) { //check
         Ewok e;
         for (int i = 0; i < list.size() ; i++) {
-
             e = this.list.get(list.get(i));
-            synchronized (e) {
+            synchronized (e) { //lock ewok ,the same lock like get ewok
                 e.release();
-                e.notifyAll();
+                e.notifyAll(); //wake tread that wait in get ewok
             }
         }
 

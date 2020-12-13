@@ -3,7 +3,6 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
-import bgu.spl.mics.application.messages.FinishAttackBroadcast;
 import bgu.spl.mics.application.messages.FinishBombDestroyerBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewok;
@@ -33,23 +32,23 @@ public class C3POMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
-        Callback<AttackEvent> attackEventCallback = c -> {
-             List<Integer> list = c.workers();
+        Callback<AttackEvent> attackEventCallback = c -> { //what to do when we get a attack
+            List<Integer> list = c.workers();
             Ewok e;
-             ewoks.useResource(list);
+            ewoks.useResource(list);
             Thread.sleep(c.getDuration());
-             ewoks.release(list);
+            ewoks.release(list);
             diary.addAttack();
             messageBus.complete(c ,true);
             diary.setC3POFinish();
         };
-        this.subscribeEvent(AttackEvent.class, attackEventCallback);
-        Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> {
+        this.subscribeEvent(AttackEvent.class, attackEventCallback); //subscribe attack event
+        Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> { //finish and terminate
             terminate();
             diary.setC3POTerminate();
-            System.out.println(this.name+ "  finish");
+            //System.out.println(this.name+ "  finish");
         };
         this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
-        Main.ly.countDown();
+        Main.ly.countDown();  //one less tread that leia need to wait for
     }
 }

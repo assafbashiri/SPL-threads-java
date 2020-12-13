@@ -1,1 +1,12 @@
-"There are 2 attacks. \n""HanSolo and CSPO finished there attacks in 2004.\n""All threads terminates 2006"
+{
+  "totalAttack": 3,
+  "HanSoloFinish": 1607863500997,
+  "C3POFinish": 1607863501243,
+  "R2D2Deactivate": 1607863501515,
+  "LandoDestroy": 1607863501717,
+  "HanSoloTerminate": 1607863501717,
+  "C3POTerminate": 1607863501717,
+  "R2D2Terminate": 1607863501717,
+  "LandoTerminate": 1607863501717,
+  "LeiaTerminate": 1607863501717
+}

@@ -20,13 +20,14 @@ import java.util.concurrent.CountDownLatch;
  * In the end, you should output a JSON.
  */
 public class Main {
-	public static CountDownLatch ly = new CountDownLatch(4);
+	public static CountDownLatch ly;
 
 	public static void main(String[] args) throws IOException, InterruptedException {
+		ly=new CountDownLatch(4); //for leia starts after everyone finish initialize
 		int LandoDuration = 0;
 		int EwoksNumber = 0;
 		int R2d2Duration = 0;
-		List attacksList = new ArrayList();
+		//List attacksList = new ArrayList();
 		Diary diary = Diary.getInstance();
 		Comparator<Integer> comparator = new Comparator<Integer>() {
 			@Override
@@ -34,8 +35,8 @@ public class Main {
 				return o1-o2;
 			}
 		};
-		//Input json = JsonInputReader.
-		Input json = JsonInputReader.getInputFromJson("/Users/assafbashiri/Desktop/SPL-threads-java-main/assignment2SPL/input.json");
+
+		Input json = JsonInputReader.getInputFromJson("C:/Users/Tehila/Desktop/git/assignment2SPL/input.json");
 	//	File input = new File(args[0]);
 	//	JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
 //		JsonObject fileObject = fileElement.getAsJsonObject();
@@ -50,19 +51,15 @@ public class Main {
 		Attack [] attacks = json.getAttacks();
 
 		//initalize thr ewoks
-		for (int i = 1 ; i <= EwoksNumber ; i++)
-		{
+		for (int i = 1 ; i <= EwoksNumber ; i++){
 			ewoks.addEwok(i);
 		}
-		//finish initialize
-
 
 		//sort the serials for the attacks
 		for (int i = 0 ; i < attacks.length ; i++)
 		{
 			attacks[i].getSerials().sort(comparator);
 		}
-		//finish sorting
 
 		//initial the program
 		Thread c3PO = new Thread(new C3POMicroservice());
@@ -78,6 +75,8 @@ public class Main {
 		lando.start();
 		leia.start();
 
+
+		//for print
 		hanSolo.join();
 		c3PO.join();
 		r2D2.join();
@@ -124,7 +123,7 @@ public class Main {
 		fileOutputStream.write(json8.getBytes());
 		*/
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		FileWriter writer = new FileWriter("/Users/assafbashiri/Desktop/SPL-threads-java-main/assignment2SPL/Output.json");
+		FileWriter writer = new FileWriter("C:/Users/Tehila/Desktop/git/assignment2SPL/output.json");
 		gson.toJson(diary , writer);
 		writer.flush();
 		writer.close();

@@ -12,6 +12,7 @@ public class AttackEvent implements Event<Boolean> {
     public AttackEvent(String s , Attack a){
         senderName = s;
         required = a.getSerials();
+        duration=a.getDuration();
 
     }
 

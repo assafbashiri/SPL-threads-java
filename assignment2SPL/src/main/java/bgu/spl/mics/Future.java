@@ -31,14 +31,12 @@ public class Future<T> {
      * @return return the result of type T if it is available, if not wait until it is available.
      *
      */
-	public T get() {//פונקציה חוסמת בלוקים
+	public T get() {//blocking
 		synchronized (this) {
 			while (!isDone) {
 				try {
 					this.wait();
-				} catch (InterruptedException e) {
-					//e.printStackTrace();
-				}
+				} catch (InterruptedException e) {}
 			}
 			return result;
 		}
@@ -51,8 +49,7 @@ public class Future<T> {
 		synchronized (this) {
 			this.result = result;
 			this.isDone = true;
-			//Thread.interrupted();
-			this.notifyAll();
+			this.notifyAll(); //wake all the trades that wait in get
 		}
 
 	}
@@ -79,12 +76,14 @@ public class Future<T> {
 		if (this.isDone) {
 			return this.result;
 		} else
-			try {
-				unit.sleep(timeout);
-				//this.wait(unit.toMillis(timeout));
+			synchronized (this) {
+				try {
+					//unit.sleep(timeout);
+					this.wait(unit.toMillis(timeout)); //wait this time or some one will do interapt
 
-			} catch (InterruptedException e) {}
-			return this.result;
+				} catch (InterruptedException e) {}
+				return this.result;
+			}
 	}
 
 	public T getResult(){

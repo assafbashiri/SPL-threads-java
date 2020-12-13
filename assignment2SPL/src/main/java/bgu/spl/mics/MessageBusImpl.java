@@ -11,8 +11,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class MessageBusImpl implements MessageBus {
     ConcurrentHashMap<MicroService, LinkedBlockingQueue<Message>> messagesQueues; // map: key = MicroService, value = message queue of this MicroService
-    final ConcurrentHashMap<Class<? extends Message>, ConcurrentLinkedQueue<MicroService>> eventType; // map: key = TYPE (event/broadcast), value = linked queue of MicroService's that subscribed to this message
-    final ConcurrentHashMap<Class<? extends Message>, ConcurrentLinkedQueue<MicroService>> broadcastType;
+    final ConcurrentHashMap<Class<? extends Message>, ConcurrentLinkedQueue<MicroService>> eventType; // map: key = TYPE (event), value = queue of MicroService's that subscribed to this Event
+    final ConcurrentHashMap<Class<? extends Message>, ConcurrentLinkedQueue<MicroService>> broadcastType; //map: key = TYPE (broadcast), value = queue of MicroService's that subscribed to this Broadcast
     ConcurrentHashMap<Event, Future> futureOfEvent; // map: key = event, value = future connected this event
 
     private MessageBusImpl(){
@@ -23,10 +23,10 @@ public class MessageBusImpl implements MessageBus {
 
     }
     @Override
-    public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {//כשאדם רוצה להירשם לסוג מסויים של אירוע
+    public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
         synchronized (eventType) {
-            if (messagesQueues.containsKey(m)) {
-                if (!eventType.containsKey(type)) {
+            if (messagesQueues.containsKey(m)) { //Checks that the microservis is already registered for the message bus
+                if (!eventType.containsKey(type)) {//checks that this type of event already registered in the system
                     ConcurrentLinkedQueue<MicroService> queue = new ConcurrentLinkedQueue<MicroService>();
                     queue.add(m);
                     eventType.put(type, queue);
@@ -38,10 +38,10 @@ public class MessageBusImpl implements MessageBus {
     }
 
     @Override
-    public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) { //כשאדם רוצה להירשם לסוג מסויים של אירוע
+    public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
         synchronized (broadcastType) {
-            if (messagesQueues.containsKey(m)) {
-                if (!broadcastType.containsKey(type)) {
+            if (messagesQueues.containsKey(m)) {  //Checks that the microservis is already registered for the message bus
+                if (!broadcastType.containsKey(type)) { //checks that this type of event already registered in the system
                     ConcurrentLinkedQueue<MicroService> queue = new ConcurrentLinkedQueue<MicroService>();
                     queue.add(m);
                     broadcastType.put(type, queue);
@@ -52,12 +52,13 @@ public class MessageBusImpl implements MessageBus {
         }
     }
 
-    @Override @SuppressWarnings("unchecked")
+    @Override
     public <T> void complete(Event<T> e, T result) {
-        if(futureOfEvent.containsKey(e)){
+        //if(futureOfEvent.containsKey(e)){ //להתייעץ עם אסף
+
             Future<T> future = futureOfEvent.get(e);
-            future.resolve(result);
-        }
+            future.resolve(result); //Update the future
+        //}
 
     }
 
@@ -65,11 +66,13 @@ public class MessageBusImpl implements MessageBus {
     public void sendBroadcast(Broadcast b) {
         synchronized (broadcastType) {
             ConcurrentLinkedQueue<MicroService> queue = broadcastType.get(b.getClass());
-            if (queue.size() > 0) {
-                for (MicroService m : queue) {
-                    messagesQueues.get(m).add(b);
+            if(queue!=null) {
+                if (queue.size() > 0) {
+                    for (MicroService m : queue) { //Send to all microservices
+                        messagesQueues.get(m).add(b);
+                    }
+                    System.out.println("heyyyy");
                 }
-                System.out.println("heyyyy");
             }
         }
 
@@ -82,26 +85,26 @@ public class MessageBusImpl implements MessageBus {
             ConcurrentLinkedQueue<MicroService> queue = eventType.get(e.getClass());
             if (queue != null) {
                 if (queue.size() > 0) {
-                    MicroService m = queue.remove();
+                    MicroService m = queue.remove(); //for the round rubin
                     Future<T> future = new Future<>();
                     futureOfEvent.put(e, future);
                     messagesQueues.get(m).add(e);
-                    queue.add(m);
+                    queue.add(m); //for the round rubin
                     return future;
                 }
             }
         }
-        return null;//check
+        return null;
     }
 
     @Override
-    public void register(MicroService m) {//האנשים קוראים לפונקציה הזאת כדי להירשם
+    public void register(MicroService m) {
         LinkedBlockingQueue<Message> queue = new LinkedBlockingQueue<Message>();
         messagesQueues.put(m,queue);
     }
 
     @Override
-    public void unregister(MicroService m) {//האנשים קוראים לפונקציה הזאת כדי לבטל הרשמה-בדרכ כשנסיים תמשימה
+    public void unregister(MicroService m) {
 
 
         for (ConcurrentLinkedQueue<MicroService> queue: broadcastType.values()){ // delete from broadcastType
@@ -110,7 +113,7 @@ public class MessageBusImpl implements MessageBus {
         for(ConcurrentLinkedQueue<MicroService> queue: eventType.values()){ // delete from eventType
             queue.remove(m);
         }
-        LinkedBlockingQueue<Message> queue = messagesQueues.remove(m);
+        LinkedBlockingQueue<Message> queue = messagesQueues.remove(m); //delete from messagesQueues
         while (queue.size()>0){
             queue.remove();
         }
@@ -119,11 +122,10 @@ public class MessageBusImpl implements MessageBus {
     }
 
     @Override
-    public Message awaitMessage(MicroService m) throws InterruptedException {
-        BlockingQueue<Message> blockingQueue;
-        blockingQueue = messagesQueues.get(m);
+    public Message awaitMessage(MicroService m) throws InterruptedException { //blocking function
+        BlockingQueue<Message> blockingQueue=  messagesQueues.get(m);
         if (blockingQueue != null) {
-            return blockingQueue.take();
+            return blockingQueue.take(); //block
         }
 
         return null;

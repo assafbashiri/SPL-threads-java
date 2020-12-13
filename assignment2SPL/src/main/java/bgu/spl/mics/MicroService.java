@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class MicroService implements Runnable {
     protected String name;
-    protected MessageBusImpl messageBus= MessageBusImpl.getInstance();
+    protected MessageBusImpl messageBus= MessageBusImpl.getInstance(); //messageBus
     protected boolean terminate ;
     protected ConcurrentHashMap<Class<?>, Callback> callBacksForMessage; // map: key = message, value = callback
 
@@ -159,12 +159,10 @@ public abstract class MicroService implements Runnable {
      */
     @Override
     public final void run() {
-        messageBus.register(this);
+        messageBus.register(this); //register
         try {
-            initialize();
-        } catch (InterruptedException exception) {
-            exception.printStackTrace();
-        }
+            initialize(); //start the subscibe
+        } catch (InterruptedException exception) {}
         Message m ;
         while (!terminate){
             try {
