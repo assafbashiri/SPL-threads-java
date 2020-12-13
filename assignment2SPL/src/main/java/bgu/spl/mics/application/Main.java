@@ -27,7 +27,6 @@ public class Main {
 		int LandoDuration = 0;
 		int EwoksNumber = 0;
 		int R2d2Duration = 0;
-		//List attacksList = new ArrayList();
 		Diary diary = Diary.getInstance();
 		Comparator<Integer> comparator = new Comparator<Integer>() {
 			@Override
@@ -37,10 +36,6 @@ public class Main {
 		};
 
 		Input json = JsonInputReader.getInputFromJson("C:/Users/Tehila/Desktop/git/assignment2SPL/input.json");
-	//	File input = new File(args[0]);
-	//	JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
-//		JsonObject fileObject = fileElement.getAsJsonObject();
-		//extract the data
 
 		//MICROSERVICE AND RESOURCES
 
@@ -93,42 +88,13 @@ public class Main {
 			helper = helper * (-1);
 			result = diary.getC3POFinish();
 		}
-		/*
-		FileOutputStream fileOutputStream = new FileOutputStream(args[1]);
-		String json0 = gson.toJson("There are " + diary.getTotalAttack() + " attacks. \n");
-		String json01 = gson.toJson("HanSolo and CSPO finished there attacks in " +(helper)+".\n");
-		String json02 = gson.toJson("All threads terminates " + (diary.maxTreminate()-result));
-		/*
-		String json = gson.toJson("HanSolo finish attack in: " + diary.getHanSoloFinish());
-		String json1 = gson.toJson("HanSolo terminate: " + diary.getHanSoloTerminate());
-		String json2 = gson.toJson("C3PO finish attack in: " + diary.getC3POFinish());
-		String json3 = gson.toJson("C3PO terminate: " + diary.getC3POTerminate());
-		String json4 = gson.toJson("R2D2 finish attack in: " + diary.getR2D2Deactivate());
-		String json5 = gson.toJson("R2D2 terminate: " + diary.getR2D2Terminate());
-		String json6 = gson.toJson("Lando finish attack in: " + diary.getLandoDestroy());
-		String json7 = gson.toJson("Lando terminate: " + diary.getLandoTerminate());
-		//String json8 = gson.toJson("hansolo finish attack in: " + diary.getHanSoloFinish());
-		String json8 = gson.toJson("Leia terminate: " + diary.getLeiaTerminate());
 
-		FileWriter writer = new FileWriter(args[1]);
-		fileOutputStream.write(json0.getBytes());
-		fileOutputStream.write(json01.getBytes());
-		fileOutputStream.write(json02.getBytes());
-		/*
-		fileOutputStream.write(json3.getBytes());
-		fileOutputStream.write(json4.getBytes());
-		fileOutputStream.write(json5.getBytes());
-		fileOutputStream.write(json6.getBytes());
-		fileOutputStream.write(json7.getBytes());
-		fileOutputStream.write(json8.getBytes());
-		*/
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		FileWriter writer = new FileWriter("C:/Users/Tehila/Desktop/git/assignment2SPL/output.json");
 		gson.toJson(diary , writer);
 		writer.flush();
 		writer.close();
 
-		//Gson gson5 = new GsonBuilder().setPrettyPrinting().create();
 
 	}
 	public static void printToFile(String filename,Object... objs2print){

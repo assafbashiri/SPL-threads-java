@@ -71,7 +71,6 @@ public class MessageBusImpl implements MessageBus {
                     for (MicroService m : queue) { //Send to all microservices
                         messagesQueues.get(m).add(b);
                     }
-                    System.out.println("heyyyy");
                 }
             }
         }

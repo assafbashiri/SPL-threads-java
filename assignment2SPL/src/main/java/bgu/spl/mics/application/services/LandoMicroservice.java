@@ -36,7 +36,7 @@ public class LandoMicroservice  extends MicroService {
         Callback<FinishBombDestroyerBroadcast> finishBombDestroyerBroadcast = c -> { //finish and terminate
             terminate();
             diary.setLandoTerminate();
-            System.out.println(this.name+ "  finish");
+            //System.out.println(this.name+ "  finish");
         };
         this.subscribeBroadcast(FinishBombDestroyerBroadcast.class, finishBombDestroyerBroadcast);
         Main.ly.countDown();//one less tread to wait for

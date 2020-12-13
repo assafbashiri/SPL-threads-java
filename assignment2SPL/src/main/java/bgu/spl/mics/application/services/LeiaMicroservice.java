@@ -62,8 +62,6 @@ public class LeiaMicroservice extends MicroService {
         future1.get(); // wait to lando
         FinishBombDestroyerBroadcast b = new FinishBombDestroyerBroadcast(); //subsribe that everyone need to terminate
         this.sendBroadcast(b); //tell everyone to terminate
-        System.out.println("finish bomb");
-        //terminate();
 
     	
     }
