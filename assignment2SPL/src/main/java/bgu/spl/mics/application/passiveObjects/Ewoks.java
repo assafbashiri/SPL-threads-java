@@ -50,7 +50,7 @@ public class Ewoks {
     public void useResource ( List<Integer> list) {
         Ewok e;
         for(int i=0 ; i<list.size();i++){
-            e = getEwok(list.get(i));
+              e = getEwok(list.get(i));
         }
     }
 
